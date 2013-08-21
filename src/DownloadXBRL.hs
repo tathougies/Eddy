@@ -39,6 +39,7 @@ main = do
       response <- http request manager
       dat <- fromChunks <$> (responseBody response $$+- CL.consume)
       let s3ObjectBody = RequestBodyLBS dat
-          s3PutCmd = putObject "eddy-sec-edgar" (T.concat ["reports/", objectName]) s3ObjectBody
+          s3PutCmd' = putObject "eddy-sec-edgar" (T.concat ["reports/", objectName]) s3ObjectBody
+          s3PutCmd = s3PutCmd' { poAcl = Just AclPublicRead }
       liftIO (Prelude.putStrLn (T.unpack . T.concat $ ["Uploading to S3(", objectName,")..."]))
       pureAws awsConf serviceConf manager s3PutCmd
