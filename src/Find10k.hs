@@ -33,6 +33,7 @@ feedUri month year = printf "http://www.sec.gov/Archives/edgar/monthly/xbrlrss-%
 data FeedPart = CompanyStart |
                 Company Text |
                 ReportType Text |
+                CIKNumber Text |
                 XBRLRef Text |
                 FilingTime UTCTime
  deriving Show
@@ -83,6 +84,7 @@ main = do
 
       titleLookup (("companyName",_):("xbrlFiling",_):_) = content >>= (yield . Company) >> return True
       titleLookup (("description",_):_) = content >>= (yield . ReportType) >> return True
+      titleLookup (("cikNumber",_):_) = content >>= (yield . CIKNumber) >> return True
       titleLookup (("acceptanceDatetime", _):("xbrlFiling", _):_) = do
         x <- content
         let filingTime = parseTime defaultTimeLocale "%Y%m%d%k%M%S" (unpack x)
@@ -115,7 +117,7 @@ main = do
           Nothing -> return ()
           Just CompanyStart -> do
             maybe (return ()) yield r
-            collectCompanyInfo' (Just (Report "" "" "" undefined))
+            collectCompanyInfo' (Just (Report "" "" "" "" undefined))
           Just (Company t) -> do
             collectCompanyInfo' (Just ((fromJust r) {rCompany = t}))
           Just (ReportType t) -> collectCompanyInfo' (Just ((fromJust r) { rType = t }))
@@ -125,6 +127,7 @@ main = do
                then collectCompanyInfo' (Just (r' { rXBRLRef = t }))
                else collectCompanyInfo' r
           Just (FilingTime t) -> collectCompanyInfo' (Just ((fromJust r) { rFilingTime = t }))
+          Just (CIKNumber n) -> collectCompanyInfo' (Just ((fromJust r) { rCIKNumber = n }))
 
       parseRss = parseRss' [] itemLookup
       parseRss' stack fn = do

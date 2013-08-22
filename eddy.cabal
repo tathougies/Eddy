@@ -20,7 +20,8 @@ executable find10k
 executable downloadXBRL
     build-depends: base -any, http-conduit -any, resourcet -any, time -any, xml-conduit -any, network -any,
                    conduit >=1.0.0.0, mtl -any, resourcet -any, monad-control -any, text -any, xml-types -any,
-                   aeson -any, bytestring -any, old-locale -any, void -any, aws -any
+                   aeson -any, bytestring -any, old-locale -any, void -any, aws -any, lifted-base -any,
+                   zlib-conduit -any
     main-is: DownloadXBRL.hs
     buildable: True
     hs-source-dirs: src

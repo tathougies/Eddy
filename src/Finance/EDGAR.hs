@@ -11,14 +11,16 @@ data Report = Report {
   rCompany :: Text,
   rType :: Text,
   rXBRLRef :: Text,
+  rCIKNumber :: Text,
   rFilingTime :: UTCTime
   } deriving (Show)
 
 instance ToJSON Report where
-  toJSON (Report company typ xbrlRef filingTime) =
+  toJSON (Report company typ xbrlRef cikNumber filingTime) =
     object ["company" .= company,
             "reportType" .= typ,
             "xbrlRef" .= xbrlRef,
+            "cikNumber" .= cikNumber,
             "filingTime" .= filingTime]
 
 instance FromJSON Report where
@@ -26,4 +28,5 @@ instance FromJSON Report where
                          v .: "company" <*>
                          v .: "reportType" <*>
                          v .: "xbrlRef" <*>
+                         v .: "cikNumber" <*>
                          v .: "filingTime"
